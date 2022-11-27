@@ -2,8 +2,9 @@ package com.courserestapi.controller;
 
         import com.courserestapi.entities.Course;
         import com.courserestapi.services.CourseService;
-        import com.courserestapi.services.CourseServiceImpl;
         import org.springframework.beans.factory.annotation.Autowired;
+        import org.springframework.http.HttpStatus;
+        import org.springframework.http.ResponseEntity;
         import org.springframework.web.bind.annotation.*;
 
         import java.util.List;
@@ -42,9 +43,16 @@ public class MyController {
     }
 
     @DeleteMapping("/courses/{id}")
-    public Course deleteCourse(@PathVariable("id") Integer id){
+    public ResponseEntity<HttpStatus> deleteCourse(@PathVariable("id") String id){
 
-        return this.courseService.deleteCourse(id);
+        try {
+           this.courseService.deleteCourse(Long.parseLong(id));
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+
     }
 
 }

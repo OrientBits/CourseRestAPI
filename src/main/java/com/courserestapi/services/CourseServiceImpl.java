@@ -1,63 +1,56 @@
 package com.courserestapi.services;
 
+import com.courserestapi.dao.CourseDao;
 import com.courserestapi.entities.Course;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class CourseServiceImpl implements CourseService {
 
-
-    List<Course> courseList = new ArrayList<>();
+    @Autowired
+    private CourseDao courseDao;
 
     public CourseServiceImpl(){
-        courseList.add(new Course(145,"Java Core Course","This course contains basics of java"));
-        courseList.add(new Course(146,"Spring boot Course","Creating rest api using spring boot"));
-
     }
-
 
     @Override
     public List<Course> getCourses() {
-
-        return courseList;
+        return this.courseDao.findAll();
     }
 
     @Override
-    public Course getCourse(int id) {
-        return courseList.stream().filter(c -> c.getId() == id).findAny().get();
+    public Course getCourse(long id) {
+        return this.courseDao.findById(id).get() ;
     }
 
     @Override
     public Course addCourse(Course course) {
-        courseList.add(course);
-        System.out.println("Courses added: "+course);
+        this.courseDao.save(course);
+
         return course;
     }
 
     @Override
     public Course updateCourse(Course course) {
-        courseList = courseList.stream().map(c -> update(c,course)).collect(Collectors.toList());
+        this.courseDao.save(course);
         return course;
     }
 
     @Override
-    public Course deleteCourse(Integer id) {
-
-        Course course = courseList.stream().filter(c -> c.getId() == id).findAny().get();
-        courseList.remove(course);
-
-        return course;
+    public void deleteCourse(long id) {
+        this.courseDao.deleteById(id);
     }
 
-    private Course update(Course c,Course newCourse) {
-        if (c.getId() == newCourse.getId()){
 
+
+    private Course update(Course c,Course newCourse) {
+
+        if (c.getId() == newCourse.getId()){
             c.setTitle(newCourse.getTitle());
             c.setDescription(newCourse.getDescription());
             return c;
